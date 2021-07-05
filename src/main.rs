@@ -25,6 +25,8 @@ fn panic(info: &PanicInfo) -> ! {
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
+    martim::init();
+
     #[cfg(not(test))]
         main();
 
@@ -38,7 +40,13 @@ fn main() {
     println!("Hello, {}!", "World");
 }
 
-#[test_case]
-fn trivial_assertion() {
-    assert_eq!(1, 1);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test_case]
+    fn trivial_assertion() {
+        assert_eq!(1, 1);
+    }
 }

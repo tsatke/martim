@@ -1,5 +1,4 @@
 use core::fmt;
-use core::fmt::Arguments;
 use core::ops::{Deref, DerefMut};
 
 use lazy_static::lazy_static;
@@ -160,24 +159,29 @@ pub fn _print(args: fmt::Arguments) {
     WRITER.lock().write_fmt(args).unwrap();
 }
 
-#[test_case]
-fn test_println_not_panic_simple() {
-    println!("this must not panic")
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test_case]
-fn test_println_not_panic_many() {
-    for _ in 0..200 {
-        println!("this must not panic");
+    #[test_case]
+    fn test_println_not_panic_simple() {
+        println!("this must not panic")
     }
-}
 
-#[test_case]
-fn test_println_output() {
-    let s = "this must appear in the VGA buffer";
-    println!("{}", s);
-    for (i, c) in s.chars().enumerate() {
-        let screen_char = WRITER.lock().buffer.chars[BUFFER_HEIGHT - 2][i].read();
-        assert_eq!(char::from(screen_char.ascii_character), c);
+    #[test_case]
+    fn test_println_not_panic_many() {
+        for _ in 0..200 {
+            println!("this must not panic");
+        }
+    }
+
+    #[test_case]
+    fn test_println_output() {
+        let s = "this must appear in the VGA buffer";
+        println!("{}", s);
+        for (i, c) in s.chars().enumerate() {
+            let screen_char = WRITER.lock().buffer.chars[BUFFER_HEIGHT - 2][i].read();
+            assert_eq!(char::from(screen_char.ascii_character), c);
+        }
     }
 }
