@@ -7,14 +7,14 @@
 
 use core::panic::PanicInfo;
 
-use martim::println;
+use martim::{hlt_loop, print, println};
 
 /// This function is called on panic.
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     println!("{}", _info);
-    loop {}
+    hlt_loop()
 }
 
 #[cfg(test)]
