@@ -3,8 +3,6 @@
 
 use core::panic::PanicInfo;
 
-use crate::vga_buffer::{Color, Writer};
-
 /// This function is called on panic.
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
