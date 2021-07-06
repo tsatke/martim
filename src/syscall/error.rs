@@ -1,17 +1,14 @@
-use core::convert::TryInto;
 use core::result;
 
 pub type Result<T, E = Errno> = result::Result<T, E>;
 
-impl TryInto<i32> for Errno {
-    type Error = ();
-
-    fn try_into(self) -> Result<i32, Self::Error> {
-        Ok(self as i32)
+impl From<Errno> for i32 {
+    fn from(e: Errno) -> Self {
+        e as i32
     }
 }
 
-#[derive(Eq, PartialEq)]
+#[derive(Eq, PartialEq, Debug)]
 pub enum Errno {
     /// Operation not permitted
     EPERM = 1,

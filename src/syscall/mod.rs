@@ -1,10 +1,11 @@
+use core::sync::atomic::Ordering;
+
 use error::Result;
 
-use crate::context::ContextId;
-use crate::syscall::error::Errno;
+use crate::context::{ContextId, CURRENT_CONTEXT_ID};
 
 pub mod error;
 
 pub fn getpid() -> Result<ContextId> {
-    Err(Errno::ENOSYS)
+    Ok(ContextId::from(CURRENT_CONTEXT_ID.load(Ordering::SeqCst)))
 }
