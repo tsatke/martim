@@ -2,18 +2,31 @@
 
 A ~experimental~ superior kernel written in Rust
 
-## Run in QEMU
+## Setup
 
-```bash
+### Requirements
+
+* QEMU
+* A Rust nightly build
+    * e.g. `rustup toolchain install nightly` as
+      per [this](https://doc.rust-lang.org/edition-guide/rust-2018/rustup-for-managing-rust-versions.html) page
+
+### Build and Run
+
+To run the kernel in QEMU
+
+```plain
 cargo run
 ```
 
-## Build
+To run the tests
 
-```bash
-cargo build --target x86_64-martim.json --release
+```plain
+cargo test
 ```
 
-## Resources
+To only build the image but not run it
 
-To find a list of resources used for this project, see RESOURCES.md
+```plain
+cargo bootimage
+```
