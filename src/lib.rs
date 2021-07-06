@@ -2,23 +2,38 @@
 #![cfg_attr(test, no_main)]
 #![feature(custom_test_frameworks)]
 #![feature(abi_x86_interrupt)]
+#![feature(alloc_error_handler)]
+#![feature(const_mut_refs)]
+#![feature(async_stream)]
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+
+extern crate alloc;
+
 use core::panic::PanicInfo;
 
-use x86_64::instructions::hlt;
+#[cfg(test)]
+use bootloader::{BootInfo, entry_point};
 
 pub mod serial;
 pub mod vga_buffer;
 pub mod interrupts;
 pub mod gdt;
+pub mod memory;
+pub mod allocator;
+pub mod task;
 
 pub fn init() {
     gdt::init(); // init global descriptor table
     interrupts::init_idt(); // init interrupt handlers
     unsafe { interrupts::PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
+}
+
+#[alloc_error_handler]
+fn alloc_error_handler(layout: alloc::alloc::Layout) -> ! {
+    panic!("allocation error: {:?}", layout)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -73,10 +88,12 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     hlt_loop();
 }
 
+#[cfg(test)]
+entry_point!(test_kernel_main);
+
 /// Entry point for `cargo test`
 #[cfg(test)]
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+fn test_kernel_main(_boot_info: &'static BootInfo) -> ! {
     init();
     test_main();
     hlt_loop();
