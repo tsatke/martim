@@ -3,7 +3,7 @@ use alloc::sync::Arc;
 
 use spin::Mutex;
 
-use crate::context::context::{Context, ContextId};
+use super::{Context, ContextId};
 
 pub struct ContextList {
     map: BTreeMap<ContextId, Arc<Mutex<Context>>>,
