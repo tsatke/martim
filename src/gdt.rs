@@ -47,8 +47,6 @@ pub fn init() {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test_case]
     fn test() {
         assert_eq!(1, 1)

@@ -7,16 +7,14 @@
 
 extern crate alloc;
 
-use alloc::boxed::Box;
-use alloc::rc::Rc;
-use alloc::vec;
-use alloc::vec::Vec;
 use core::panic::PanicInfo;
 
 use bootloader::{BootInfo, entry_point};
-use x86_64::structures::paging::Page;
+use x86_64::VirtAddr;
 
+#[allow(unused_imports)] // not actually unused
 use martim::{hlt_loop, println};
+use martim::{allocator, context, memory};
 use martim::memory::BootInfoFrameAllocator;
 use martim::task::{keyboard, Task};
 use martim::task::executor::Executor;
@@ -38,20 +36,9 @@ fn panic(info: &PanicInfo) -> ! {
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    use martim::memory;
-    use martim::allocator;
-    use x86_64::VirtAddr;
-
     martim::init();
-
-    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
-    let mut mapper = unsafe { memory::init(phys_mem_offset) };
-    let mut frame_allocator = unsafe {
-        BootInfoFrameAllocator::init(&boot_info.memory_map)
-    };
-
-    allocator::init_heap(&mut mapper, &mut frame_allocator)
-        .expect("heap initialization failed");
+    init_heap(boot_info);
+    context::init();
 
     #[cfg(not(test))]
         main();
@@ -63,8 +50,17 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     executor.spawn(Task::new(example_task()));
     executor.spawn(Task::new(keyboard::print_keypresses()));
     executor.run();
+}
 
-    martim::hlt_loop();
+fn init_heap(boot_info: &'static BootInfo) {
+    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
+    let mut mapper = unsafe { memory::init(phys_mem_offset) };
+    let mut frame_allocator = unsafe {
+        BootInfoFrameAllocator::init(&boot_info.memory_map)
+    };
+
+    allocator::init_heap(&mut mapper, &mut frame_allocator)
+        .expect("heap initialization failed");
 }
 
 fn main() {
@@ -82,8 +78,6 @@ async fn example_task() {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test_case]
     fn trivial_assertion() {
         assert_eq!(1, 1);

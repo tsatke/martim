@@ -81,7 +81,7 @@ fn many_boxes_long_lived() {
 #[test_case]
 fn large_allocation() {
     let size: usize = HEAP_SIZE / 2;
-    for i in 0..1000 {
+    for _ in 0..1000 {
         let large = vec![0_u8; size];
         assert_eq!(large.len(), size);
     }

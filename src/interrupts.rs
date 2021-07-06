@@ -4,9 +4,9 @@ use spin;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 use x86_64::structures::idt::PageFaultErrorCode;
 
-use crate::println;
 use crate::gdt;
 use crate::hlt_loop;
+use crate::println;
 
 // "Remapped" PICS chosen as 32 to 47
 pub const PIC_1_OFFSET: u8 = 32;
@@ -100,8 +100,6 @@ unsafe fn clear_interrupt(which: InterruptIndex) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test_case]
     fn test_breakpoint_exception() {
         // invoke a breakpoint exception

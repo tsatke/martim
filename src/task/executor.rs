@@ -66,9 +66,7 @@ impl Executor {
             interrupts::enable();
         }
     }
-}
 
-impl Executor {
     pub fn spawn(&mut self, task: Task) {
         let task_id = task.id;
         if self.tasks.insert(task.id, task).is_some() {

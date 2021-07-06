@@ -23,6 +23,7 @@ pub mod gdt;
 pub mod memory;
 pub mod allocator;
 pub mod task;
+pub mod context;
 
 pub fn init() {
     gdt::init(); // init global descriptor table
