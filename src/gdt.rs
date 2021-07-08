@@ -48,7 +48,7 @@ pub fn init() {
 #[cfg(test)]
 mod tests {
     #[test_case]
-    fn test() {
+    fn test_trivial() {
         assert_eq!(1, 1)
     }
 }
