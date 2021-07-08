@@ -2,13 +2,14 @@ use core::result;
 
 pub type Result<T, E = Errno> = result::Result<T, E>;
 
-impl From<Errno> for i32 {
+impl From<Errno> for usize {
     fn from(e: Errno) -> Self {
-        e as i32
+        e as usize
     }
 }
 
 #[derive(Eq, PartialEq, Debug)]
+#[repr(i32)]
 pub enum Errno {
     /// Operation not permitted
     EPERM = 1,

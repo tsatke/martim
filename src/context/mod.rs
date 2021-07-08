@@ -46,6 +46,12 @@ impl From<ContextId> for u64 {
     }
 }
 
+impl From<ContextId> for usize {
+    fn from(c: ContextId) -> Self {
+        c.0 as usize
+    }
+}
+
 impl From<ContextId> for i32 {
     fn from(c: ContextId) -> Self {
         c.0 as i32
