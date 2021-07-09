@@ -7,6 +7,7 @@
 extern crate alloc;
 
 use alloc::boxed::Box;
+use alloc::collections::LinkedList;
 use alloc::vec;
 use alloc::vec::Vec;
 use core::panic::PanicInfo;
@@ -46,6 +47,13 @@ fn simple_allocation() {
     let heap_value_2 = Box::new(13);
     assert_eq!(*heap_value_1, 41);
     assert_eq!(*heap_value_2, 13);
+}
+
+#[test_case]
+fn simple_linked_list() {
+    let mut l = Box::new(LinkedList::<&str>::new());
+    l.push_back("hello");
+    assert_eq!(1, l.len());
 }
 
 #[test_case]

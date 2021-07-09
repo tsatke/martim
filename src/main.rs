@@ -13,8 +13,9 @@ use bootloader::{BootInfo, entry_point};
 use x86_64::VirtAddr;
 
 #[allow(unused_imports)] // not actually unused
-use martim::{hlt_loop, println};
+use martim::{hlt_loop, print, println, serial_println};
 use martim::{allocator, context, memory};
+use martim::filesystem::vfs;
 use martim::memory::BootInfoFrameAllocator;
 use martim::task::{keyboard, Task};
 use martim::task::executor::Executor;
@@ -36,9 +37,25 @@ fn panic(info: &PanicInfo) -> ! {
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
+    println!(r#"
+
+$$\      $$\                      $$\     $$\
+$$$\    $$$ |                     $$ |    \__|
+$$$$\  $$$$ | $$$$$$\   $$$$$$\ $$$$$$\   $$\ $$$$$$\$$$$\
+$$\$$\$$ $$ | \____$$\ $$  __$$\\_$$  _|  $$ |$$  _$$  _$$\
+$$ \$$$  $$ | $$$$$$$ |$$ |  \__| $$ |    $$ |$$ / $$ / $$ |
+$$ |\$  /$$ |$$  __$$ |$$ |       $$ |$$\ $$ |$$ | $$ | $$ |
+$$ | \_/ $$ |\$$$$$$$ |$$ |       \$$$$  |$$ |$$ | $$ | $$ |
+\__|     \__| \_______|\__|        \____/ \__|\__| \__| \__|
+
+"#);
+
+    print!("init kernel...");
     martim::init();
-    init_heap(boot_info);
+    martim::init_heap(boot_info);
     context::init();
+    vfs::init();
+    println!("done\n\n");
 
     #[cfg(not(test))]
         main();
@@ -52,16 +69,6 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     executor.run();
 }
 
-pub fn init_heap(boot_info: &'static BootInfo) {
-    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
-    let mut mapper = unsafe { memory::init(phys_mem_offset) };
-    let mut frame_allocator = unsafe {
-        BootInfoFrameAllocator::init(&boot_info.memory_map)
-    };
-
-    allocator::init_heap(&mut mapper, &mut frame_allocator)
-        .expect("heap initialization failed");
-}
 
 fn main() {
     println!("Hello, {}!", "World");

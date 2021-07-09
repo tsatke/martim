@@ -3,6 +3,8 @@ use core::{mem, ptr};
 use core::alloc::Layout;
 use core::ptr::NonNull;
 
+use crate::serial_println;
+
 use super::Locked;
 
 struct ListNode {

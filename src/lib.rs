@@ -14,18 +14,24 @@ extern crate alloc;
 
 use core::panic::PanicInfo;
 
+use bootloader::BootInfo;
 #[cfg(test)]
-use bootloader::{BootInfo, entry_point};
+use bootloader::entry_point;
+use x86_64::VirtAddr;
 
-pub mod serial;
-pub mod vga_buffer;
-pub mod interrupts;
-pub mod gdt;
-pub mod memory;
+use crate::filesystem::vfs;
+use crate::memory::BootInfoFrameAllocator;
+
 pub mod allocator;
-pub mod task;
 pub mod context;
+pub mod filesystem;
+pub mod gdt;
+pub mod interrupts;
+pub mod memory;
+pub mod serial;
 pub mod syscall;
+pub mod task;
+pub mod vga_buffer;
 
 pub fn init() {
     gdt::init(); // init global descriptor table
@@ -96,10 +102,26 @@ entry_point!(test_kernel_main);
 
 /// Entry point for `cargo test`
 #[cfg(test)]
-fn test_kernel_main(_boot_info: &'static BootInfo) -> ! {
+fn test_kernel_main(boot_info: &'static BootInfo) -> ! {
+    serial_print!("init...");
     init();
+    init_heap(boot_info);
+    context::init();
+    vfs::init();
+    serial_println!("done");
+
     test_main();
     hlt_loop();
+}
+
+pub fn init_heap(boot_info: &'static BootInfo) {
+    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
+    let mut mapper = unsafe { memory::init(phys_mem_offset) };
+    let mut frame_allocator = unsafe {
+        BootInfoFrameAllocator::init(&boot_info.memory_map)
+    };
+    allocator::init_heap(&mut mapper, &mut frame_allocator)
+        .expect("heap initialization failed");
 }
 
 #[cfg(test)]

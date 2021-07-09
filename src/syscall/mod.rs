@@ -376,7 +376,7 @@ mod tests {
     use super::*;
 
     #[test_case]
-    fn test_try_from_syscallno() {
+    fn test_try_from_syscall() {
         assert_eq!(Syscall::Read, 0_usize.try_into().unwrap());
         assert_eq!(Syscall::Write, 1_usize.try_into().unwrap());
         assert_eq!(Syscall::Getpid, 39_usize.try_into().unwrap());
