@@ -4,3 +4,6 @@ tasks:
       rustup toolchain install nightly
       rustup default nightly
       rustup component add rust-src --toolchain nightly
+    init: |
+      cargo build
+      cargo test --no-run
