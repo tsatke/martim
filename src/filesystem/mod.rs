@@ -1,9 +1,6 @@
-use alloc::sync::Arc;
-
 use crate::filesystem::fd::FileDescriptor;
 use crate::filesystem::flags::{Mode, OpenFlags};
 use crate::syscall::error::Errno;
-use alloc::boxed::Box;
 
 pub mod ext2;
 pub mod fd;
