@@ -1,4 +1,5 @@
 tasks:
   - name: Rust nightly
-    init: rustup toolchain install nightly
-    command: rustup default nightly
+    before: |
+      rustup toolchain install nightly
+      rustup default nightly
