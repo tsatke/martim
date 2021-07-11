@@ -153,4 +153,19 @@ mod tests {
         assert_eq!(Err(Errno::EINVAL), vfs.unmount("/foobar"));
         assert_eq!(0, vfs.mount_count());
     }
+
+    #[test_case]
+    fn test_mount_and_open() {
+        let fs = Box::new(EmptyFileSystem::from(2.into()));
+
+        let vfs = Vfs::new(FsId::from(11));
+
+        assert!(vfs.mount("/", fs, MountFlags::NONE).is_ok());
+
+        let f_res = vfs.open("/foo/bar.file", Mode::from(0), OpenFlags::O_RDWR);
+        assert!(f_res.is_ok());
+
+        let f = f_res.unwrap();
+        assert_eq!("/foo/bar.file", f.absolute_path());
+    }
 }
