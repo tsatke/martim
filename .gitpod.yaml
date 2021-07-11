@@ -1,2 +1,7 @@
 image:
     file: .gitpod.Dockerfile
+
+tasks:
+  - name: Rust nightly
+    init: rustup toolchain install nightly
+    command: rustup default nightly
