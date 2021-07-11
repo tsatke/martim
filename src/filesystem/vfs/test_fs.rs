@@ -6,33 +6,32 @@ use alloc::collections::LinkedList;
 use alloc::sync::Arc;
 use core::borrow::BorrowMut;
 
-pub struct TestFs<'a> {
+pub struct TestFs {
     fsid: FsId,
-    init_called: usize,
-    open_calls: LinkedList<(&'a str, Mode, OpenFlags)>,
+    init_callback: Option<fn()>,
+    open_callback: Option<fn(&str, Mode, OpenFlags)>,
 }
 
-impl<'a> TestFs<'a> {
+impl TestFs {
     pub fn from(fsid: FsId) -> Self {
         TestFs {
             fsid,
-            init_called: 0,
-            open_calls: LinkedList::new(),
+            init_callback: None,
+            open_callback: None,
         }
     }
 
-    pub fn init_called_count(&self) -> usize {
-        self.init_called
+    pub fn set_initialize_callback(&mut self, cb: fn()) {
+        self.init_callback = Some(cb);
     }
 }
 
-impl<'a> FileSystem for TestFs<'a> {
+impl FileSystem for TestFs {
     fn fsid(&self) -> FsId {
         self.fsid
     }
 
-    fn initialize(&mut self) -> bool {
-        self.init_called += 1;
+    fn initialize(&self) -> bool {
         true
     }
 
@@ -40,23 +39,19 @@ impl<'a> FileSystem for TestFs<'a> {
         false
     }
 
-    fn open(
-        &mut self,
-        path: &'a str,
-        mode: Mode,
-        flags: OpenFlags,
-    ) -> Result<&Arc<FileDescriptor>, Errno> {
-        self.open_calls.push_back((path, mode, flags));
+    fn open(&self, path: &str, mode: Mode, flags: OpenFlags) -> Result<FileDescriptor, Errno> {
         todo!()
     }
 
-    fn mkdir(&mut self, path: &str, mode: Mode) -> Result<(), Errno> {
+    fn mkdir(&self, path: &str, mode: Mode) -> Result<(), Errno> {
         todo!()
     }
 
-    fn rmdir(&mut self, path: &str) -> Result<(), Errno> {
+    fn rmdir(&self, path: &str) -> Result<(), Errno> {
         todo!()
     }
 
-    fn flush(&mut self) {}
+    fn flush(&self) {
+        todo!()
+    }
 }

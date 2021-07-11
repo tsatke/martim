@@ -19,9 +19,7 @@ impl From<u32> for FsId {
 pub trait FileSystem {
     fn fsid(&self) -> FsId;
 
-    fn initialize(&self) -> bool {
-        true
-    }
+    fn initialize(&self) -> bool;
 
     fn is_read_only(&self) -> bool;
 
