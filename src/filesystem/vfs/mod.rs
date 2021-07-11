@@ -3,7 +3,7 @@ use alloc::rc::Rc;
 
 use spin::Mutex;
 
-use crate::filesystem::fd::FileDescriptor;
+use crate::filesystem::file_descriptor::FileDescriptor;
 use crate::filesystem::flags::{Mode, MountFlags, OpenFlags};
 use crate::filesystem::{FileSystem, FsId};
 use crate::syscall::error::{Errno, Result};
@@ -80,7 +80,12 @@ impl FileSystem for Vfs {
         true
     }
 
-    fn open(&self, path: &str, mode: Mode, flags: OpenFlags) -> Result<FileDescriptor, Errno> {
+    fn open(
+        &self,
+        path: &'static str,
+        mode: Mode,
+        flags: OpenFlags,
+    ) -> Result<Box<dyn FileDescriptor>, Errno> {
         match self.find_file_system_for_path(path) {
             Some(fs) => fs.clone().lock().open(path, mode, flags),
             None => Err(Errno::ENOENT),
@@ -108,25 +113,15 @@ impl FileSystem for Vfs {
 
 #[cfg(test)]
 mod tests {
-    use crate::filesystem::vfs::test_fs::TestFs;
+    use crate::filesystem::vfs::test_fs::EmptyFileSystem;
 
     use super::*;
 
     #[test_case]
-    fn test_initialize_called() {
-        let mut fs = Box::new(TestFs::from(7.into()));
-
-        let mut vfs = Vfs::new(FsId::from(0));
-        assert_eq!(0, vfs.mount_count());
-
-        assert!(vfs.mount("/", fs, MountFlags::NONE).is_ok());
-    }
-
-    #[test_case]
     fn test_mount_unmount() {
-        let fs = Box::new(TestFs::from(19.into()));
+        let fs = Box::new(EmptyFileSystem::from(19.into()));
 
-        let mut vfs = Vfs::new(FsId::from(0));
+        let vfs = Vfs::new(FsId::from(0));
         assert_eq!(0, vfs.mount_count());
 
         assert!(vfs.mount("/", fs, MountFlags::NONE).is_ok());
@@ -141,9 +136,9 @@ mod tests {
 
     #[test_case]
     fn test_unmount_wrong_dir() {
-        let fs = Box::new(TestFs::from(19.into()));
+        let fs = Box::new(EmptyFileSystem::from(19.into()));
 
-        let mut vfs = Vfs::new(FsId::from(0));
+        let vfs = Vfs::new(FsId::from(0));
         assert_eq!(0, vfs.mount_count());
 
         assert!(vfs.mount("/", fs, MountFlags::NONE).is_ok());

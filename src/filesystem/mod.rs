@@ -1,10 +1,12 @@
-use crate::filesystem::fd::FileDescriptor;
+use crate::filesystem::file_descriptor::FileDescriptor;
 use crate::filesystem::flags::{Mode, OpenFlags};
 use crate::syscall::error::Errno;
+use alloc::boxed::Box;
 
 pub mod ext2;
-pub mod fd;
+pub mod file_descriptor;
 pub mod flags;
+pub mod stat;
 pub mod vfs;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -23,7 +25,12 @@ pub trait FileSystem {
 
     fn is_read_only(&self) -> bool;
 
-    fn open(&self, path: &str, mode: Mode, flags: OpenFlags) -> Result<FileDescriptor, Errno>;
+    fn open(
+        &self,
+        path: &'static str,
+        mode: Mode,
+        flags: OpenFlags,
+    ) -> Result<Box<dyn FileDescriptor>, Errno>;
 
     fn mkdir(&self, path: &str, mode: Mode) -> Result<(), Errno>;
 
