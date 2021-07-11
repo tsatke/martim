@@ -19,7 +19,10 @@ pub fn _print(args: ::core::fmt::Arguments) {
     // so that no deadlock can occur when we want to print
     // something in an interrupt handler
     interrupts::without_interrupts(|| {
-        SERIAL1.lock().write_fmt(args).expect("Printing to serial failed");
+        SERIAL1
+            .lock()
+            .write_fmt(args)
+            .expect("Printing to serial failed");
     });
 }
 

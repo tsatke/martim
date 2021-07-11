@@ -28,8 +28,16 @@ pub fn getpid() -> usize {
 }
 
 /// Generates a TryFrom implementation for the enclosed enum.
-macro_rules! generate_try_from_usize {
-    ($(#[$meta:meta])* $vis:vis enum $name:ident {
+///
+///     generate_try_from! {
+///         enum MyEnum: usize {
+///             ...
+///         }
+///     }
+///
+/// will generate a TryFrom&lt;usize&gt; implementation for MyEnum.
+macro_rules! generate_try_from {
+    ($(#[$meta:meta])* $vis:vis enum $name:ident : $typ:ty {
         $($(#[$vmeta:meta])* $vname:ident $(= $val:expr)?,)*
     }) => {
         $(#[$meta])*
@@ -37,12 +45,12 @@ macro_rules! generate_try_from_usize {
             $($(#[$vmeta])* $vname $(= $val)?,)*
         }
 
-        impl core::convert::TryFrom<usize> for $name {
+        impl core::convert::TryFrom<$typ> for $name {
             type Error = ();
 
-            fn try_from(v: usize) -> Result<Self, Self::Error> {
+            fn try_from(v: $typ) -> Result<Self, Self::Error> {
                 match v {
-                    $(x if x == $name::$vname as usize => Ok($name::$vname),)*
+                    $(x if x == $name::$vname as $typ => Ok($name::$vname),)*
                     _ => Err(()),
                 }
             }
@@ -50,10 +58,10 @@ macro_rules! generate_try_from_usize {
     }
 }
 
-generate_try_from_usize! {
+generate_try_from! {
     #[derive(Debug, Ord, PartialOrd, Eq, PartialEq)]
     #[repr(usize)]
-    pub enum Syscall {
+    pub enum Syscall: usize {
         Read = 0,
         Write = 1,
         Open = 2,

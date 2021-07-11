@@ -5,7 +5,7 @@ use conquer_once::spin::OnceCell;
 use crossbeam_queue::ArrayQueue;
 use futures_util::stream::{Stream, StreamExt};
 use futures_util::task::AtomicWaker;
-use pc_keyboard::{DecodedKey, HandleControl, Keyboard, layouts, ScancodeSet1};
+use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
 
 use crate::print;
 use crate::println;
@@ -31,8 +31,7 @@ pub(crate) fn add_scancode(scancode: u8) {
 
 pub async fn print_keypresses() {
     let mut scancodes = ScancodeStream::new();
-    let mut keyboard = Keyboard::new(layouts::Us104Key, ScancodeSet1,
-                                     HandleControl::Ignore);
+    let mut keyboard = Keyboard::new(layouts::Us104Key, ScancodeSet1, HandleControl::Ignore);
 
     while let Some(scancode) = scancodes.next().await {
         if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
@@ -52,7 +51,8 @@ pub struct ScancodeStream {
 
 impl ScancodeStream {
     pub fn new() -> Self {
-        SCANCODE_QUEUE.try_init_once(|| ArrayQueue::new(SCANCODE_QUEUE_SIZE))
+        SCANCODE_QUEUE
+            .try_init_once(|| ArrayQueue::new(SCANCODE_QUEUE_SIZE))
             .expect("ScancodeStream::new should only be called once");
         ScancodeStream { _private: () }
     }

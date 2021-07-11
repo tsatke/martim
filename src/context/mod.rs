@@ -18,7 +18,8 @@ lazy_static! {
 
 pub fn init() {
     // init first context
-    let id = CONTEXTS.lock()
+    let id = CONTEXTS
+        .lock()
         .new_context()
         .expect("unable to initialize first context")
         .lock()

@@ -1,7 +1,6 @@
 #![feature(custom_test_frameworks)]
 #![test_runner(martim::test_runner)]
 #![reexport_test_harness_main = "test_main"]
-
 #![no_std]
 #![no_main]
 
@@ -9,16 +8,15 @@ extern crate alloc;
 
 use core::panic::PanicInfo;
 
-use bootloader::{BootInfo, entry_point};
-use x86_64::VirtAddr;
+use bootloader::{entry_point, BootInfo};
 
-#[allow(unused_imports)] // not actually unused
-use martim::{hlt_loop, print, println, serial_println};
-use martim::{allocator, context, memory};
+use martim::context;
 use martim::filesystem::vfs;
-use martim::memory::BootInfoFrameAllocator;
-use martim::task::{keyboard, Task};
+#[cfg(not(test))]
+use martim::hlt_loop;
 use martim::task::executor::Executor;
+use martim::task::{keyboard, Task};
+use martim::{print, println};
 
 /// This function is called on panic.
 #[cfg(not(test))]
@@ -37,7 +35,8 @@ fn panic(info: &PanicInfo) -> ! {
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    println!(r#"
+    println!(
+        r#"
 
 $$\      $$\                      $$\     $$\
 $$$\    $$$ |                     $$ |    \__|
@@ -48,7 +47,8 @@ $$ |\$  /$$ |$$  __$$ |$$ |       $$ |$$\ $$ |$$ | $$ | $$ |
 $$ | \_/ $$ |\$$$$$$$ |$$ |       \$$$$  |$$ |$$ | $$ | $$ |
 \__|     \__| \_______|\__|        \____/ \__|\__| \__| \__|
 
-"#);
+"#
+    );
 
     print!("init kernel...");
     martim::init();
@@ -58,17 +58,16 @@ $$ | \_/ $$ |\$$$$$$$ |$$ |       \$$$$  |$$ |$$ | $$ | $$ |
     println!("done\n\n");
 
     #[cfg(not(test))]
-        main();
+    main();
 
     #[cfg(test)]
-        test_main();
+    test_main();
 
     let mut executor = Executor::new();
     executor.spawn(Task::new(example_task()));
     executor.spawn(Task::new(keyboard::print_keypresses()));
     executor.run();
 }
-
 
 fn main() {
     println!("Hello, {}!", "World");

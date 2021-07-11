@@ -2,8 +2,10 @@ use bitflags::bitflags;
 
 bitflags! {
     pub struct MountFlags: u32 {
-        const NONE = 0;
-        const NOEXEC = 1;
+        const NONE = 1 << 0;
+        const NOEXEC = 1 << 1;
+        const READONLY = 1 << 2;
+        const SYNCHRONOUS = 1 << 3;
     }
 }
 

@@ -1,5 +1,5 @@
-use alloc::{collections::BTreeMap, sync::Arc};
 use alloc::task::Wake;
+use alloc::{collections::BTreeMap, sync::Arc};
 use core::task::{Context, Poll, Waker};
 
 use crossbeam_queue::ArrayQueue;

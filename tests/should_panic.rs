@@ -3,7 +3,7 @@
 
 use core::panic::PanicInfo;
 
-use martim::{exit_qemu, QemuExitCode, serial_print, serial_println};
+use martim::{exit_qemu, serial_print, serial_println, QemuExitCode};
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {

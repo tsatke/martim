@@ -9,16 +9,16 @@
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-
 extern crate alloc;
 
 use core::panic::PanicInfo;
 
-use bootloader::BootInfo;
 #[cfg(test)]
 use bootloader::entry_point;
+use bootloader::BootInfo;
 use x86_64::VirtAddr;
 
+#[cfg(test)]
 use crate::filesystem::vfs;
 use crate::memory::BootInfoFrameAllocator;
 
@@ -72,8 +72,8 @@ pub trait Testable {
 }
 
 impl<T> Testable for T
-    where
-        T: Fn(),
+where
+    T: Fn(),
 {
     fn run(&self) {
         serial_print!("test {}...\t", core::any::type_name::<T>());
@@ -117,11 +117,8 @@ fn test_kernel_main(boot_info: &'static BootInfo) -> ! {
 pub fn init_heap(boot_info: &'static BootInfo) {
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
-    let mut frame_allocator = unsafe {
-        BootInfoFrameAllocator::init(&boot_info.memory_map)
-    };
-    allocator::init_heap(&mut mapper, &mut frame_allocator)
-        .expect("heap initialization failed");
+    let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
+    allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 }
 
 #[cfg(test)]

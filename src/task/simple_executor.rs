@@ -1,6 +1,6 @@
 use alloc::collections::VecDeque;
-use core::task::{Context, Poll, RawWaker, Waker};
 use core::task::RawWakerVTable;
+use core::task::{Context, Poll, RawWaker, Waker};
 
 use super::Task;
 

@@ -19,7 +19,10 @@ impl ContextList {
     pub fn new_context(&mut self) -> Result<&Arc<Mutex<Context>>, ()> {
         let id = ContextId::new();
         assert!(!self.map.contains_key(&id));
-        assert!(self.map.insert(id, Arc::new(Mutex::new(Context::new(id)))).is_none());
+        assert!(self
+            .map
+            .insert(id, Arc::new(Mutex::new(Context::new(id))))
+            .is_none());
 
         Ok(self.map.get(&id).expect("unable to insert context"))
     }
