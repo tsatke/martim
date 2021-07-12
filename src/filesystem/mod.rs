@@ -6,7 +6,9 @@ use alloc::boxed::Box;
 pub mod ext2;
 pub mod file_descriptor;
 pub mod flags;
+pub mod inode;
 pub mod stat;
+pub mod upnode;
 pub mod vfs;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
