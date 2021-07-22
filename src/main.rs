@@ -34,7 +34,7 @@ fn panic(info: &PanicInfo) -> ! {
 
 entry_point!(kernel_main);
 
-fn kernel_main(boot_info: &'static BootInfo) -> ! {
+fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     println!(
         r#"
 
