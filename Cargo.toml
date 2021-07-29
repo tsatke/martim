@@ -49,6 +49,8 @@ features = ["spin_no_std"]
 
 [package.metadata.bootloader]
 map-physical-memory = true
+map-framebuffer = true
+framebuffer-address = 0xb8000
 
 #[package.metadata.bootimage]
 #test-args = [

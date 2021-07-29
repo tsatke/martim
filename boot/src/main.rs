@@ -1,3 +1,4 @@
+use std::process::Stdio;
 use std::{
     path::{Path, PathBuf},
     process::Command,
@@ -32,7 +33,10 @@ fn main() {
     let mut run_cmd = Command::new("qemu-system-x86_64");
     run_cmd
         .arg("-drive")
-        .arg(format!("format=raw,file={}", bios.display()));
+        .arg(format!("format=raw,file={}", bios.display()))
+        .arg("-serial")
+        .arg("stdio")
+        .stdout(Stdio::piped());
     run_cmd.args(RUN_ARGS);
 
     let exit_status = run_cmd.status().unwrap();
